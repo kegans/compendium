@@ -1,5 +1,5 @@
 /**
-  * table.h
+  * bst.h
   *
   * Character-Lexicon
   * 6.20.2015
