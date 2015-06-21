@@ -1,5 +1,5 @@
 /**
-  * Character.h
+  * character.h
   *
   * Character-Lexicon
   * 6.20.2015
@@ -52,5 +52,4 @@ class Character //contains character member function prototypes and data members
             int num_skills; //number of skills entered
 };
 #endif
-
 
