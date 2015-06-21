@@ -1,5 +1,5 @@
 /**
-  * Character.cpp
+  * character.cpp
   *
   * Character-Lexicon
   * 6.20.2015
@@ -201,5 +201,3 @@ int Character::display(void)const
     
     return 1;
 }
-
-
