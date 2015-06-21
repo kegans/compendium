@@ -1,5 +1,5 @@
 /**
-  * table.cpp
+  * bst.cpp
   *
   * Character-Lexicon
   * 6.20.2015
@@ -8,7 +8,7 @@
   * kegan.sanchez@gmail.com
   * 
   * Character-Lexicon: Creates a binary search tree ADT to 
-  * manage mobile apps by implementing functions to 
+  * manage RPG Characters by implementing functions to 
   * recursively insert, retrieve, display, remove all 
   * matches by location, and remove all items.
   *
@@ -53,7 +53,7 @@ int table::remove_all(bst_node *& root)
 }
 
 // wrapper function to call the private insert functions
-int table::insert(app_entry & a_new_entry)
+int table::insert(Character & a_new_entry)
 {
     //copies an entry into a private LLL of app entries
     if(!insert_LLL(head, tail, a_new_entry))
@@ -70,9 +70,9 @@ int table::insert(app_entry & a_new_entry)
 }
 
 //copies an entry into a private LLL of app entries
-int table::insert_LLL(l_node *& head, l_node *& tail, app_entry & a_new_entry)
+int table::insert_LLL(l_node *& head, l_node *& tail, Character & a_new_entry)
 {
-    char ** temp_keywords = NULL;
+    char ** temp_skills = NULL;
     int temp_categories = 0;
 
     l_node * temp = new l_node; //creates a new node with a temp pointer
@@ -88,13 +88,13 @@ int table::insert_LLL(l_node *& head, l_node *& tail, app_entry & a_new_entry)
         tail = tail -> next; //set tail to the new node
     }
         
-    tail -> entry.copy(a_new_entry, temp_keywords, temp_categories); //copy the entry's data into the new node
+    tail -> entry.copy(a_new_entry, temp_skills, temp_categories); //copy the entry's data into the new node
     tail -> bst_categories = temp_categories; //copy the entry's category/keyword number into the node
     tail -> bst_keywords = new char *[temp_categories]; //create a keyword array in the new node
     for (int m = 0; m < temp_categories; ++m) //for each element in the array
     {
-        tail -> bst_keywords[m] = new char[strlen(temp_keywords[m])+1]; //create a new char array
-        strcpy(tail -> bst_keywords[m], temp_keywords[m]); //copy the keyword into the node's array of keywords
+        tail -> bst_keywords[m] = new char[strlen(temp_skills[m])+1]; //create a new char array
+        strcpy(tail -> bst_keywords[m], temp_skills[m]); //copy the keyword into the node's array of keywords
     }
 
     tail -> next = NULL; //set the end of the LLL to NULL
@@ -103,22 +103,22 @@ int table::insert_LLL(l_node *& head, l_node *& tail, app_entry & a_new_entry)
 }
 
 //inserts an entry into the BST table sorted by keyword
-int table::insert_BST(bst_node *& root, app_entry & a_new_entry, char * keyword)
+int table::insert_BST(bst_node *& root, Character & a_new_entry, char * skill)
 {
     if(!root) //if there are no more nodes to traverse
     {
         root = new bst_node; //create a new node
-        root -> key = new char[strlen(keyword)+1]; //create a new char for the key 
-        strcpy(root -> key, keyword); //copy the keyword into the key char
+        root -> key = new char[strlen(skill)+1]; //create a new char for the key 
+        strcpy(root -> key, skill); //copy the keyword into the key char
         root -> entry = &a_new_entry; //point entry to the app entry
         root -> left = root -> right = NULL; //set the children to NULL
 
         return 1; //return success
     }
-    else if((root -> entry -> compare(keyword, root -> key)) < 0) //if the keyword is less than the current root's key
-        insert_BST(root -> left, a_new_entry, keyword); //insert it into the left side of the BST
+    else if((root -> entry -> compare(skill, root -> key)) < 0) //if the keyword is less than the current root's key
+        insert_BST(root -> left, a_new_entry, skill); //insert it into the left side of the BST
     else //if the keyword is greater than the current root's key
-        insert_BST(root -> right, a_new_entry, keyword); //insert it into the right side of the BST
+        insert_BST(root -> right, a_new_entry, skill); //insert it into the right side of the BST
 
     //figure out how to return 0 ?
 }
@@ -148,27 +148,27 @@ int table::display_all(bst_node * root)
 }
 
 //wrapper function for retrieving entries based on keyword
-int table::retrieve(char * a_keyword, app_entry & an_entry)
+int table::retrieve(char * a_skill, Character & an_entry)
 {
     //returns the success/failure of the private retrieve function
-    return retrieve(a_keyword, an_entry, root);
+    return retrieve(a_skill, an_entry, root);
 }
 
-//retrieves entries based on keyword and calls app_entry display for each match
-int table::retrieve(char * a_keyword, app_entry & an_entry, bst_node * root)
+//retrieves entries based on keyword and calls Character display for each match
+int table::retrieve(char * a_skill, Character & an_entry, bst_node * root)
 {
     if(root) //if the BST is not empty
     {
 	//recursively traverse the left subtree
-        retrieve(a_keyword, an_entry, root -> left);
+        retrieve(a_skill, an_entry, root -> left);
 
         //if the current entry's keyword matches the sought after keyword
-        if(root -> entry -> retrieve(a_keyword, root -> key))
+        if(root -> entry -> retrieve(a_skill, root -> key))
             //call the display function with the current entry
             root -> entry -> display();
     
         //recursively traverse the right subtree
-        retrieve(a_keyword, an_entry, root -> right);
+        retrieve(a_skill, an_entry, root -> right);
         
         return 1; //return success
     }
@@ -176,23 +176,23 @@ int table::retrieve(char * a_keyword, app_entry & an_entry, bst_node * root)
         return 0; //if the BST is empty, return failure
 }
 
-//wrapper function for removing entries based on keyword
-int table::remove(char * a_keyword)
+//wrapper function for removing entries based on skill
+int table::remove(char * a_skill)
 {
     //returns the success/failure of the private remove function
-    return remove(a_keyword, root);
+    return remove(a_skill, root);
 }
 
-//removes entries based on keyword
-int table::remove(char * a_keyword, bst_node *& root)
+//removes entries based on skill
+int table::remove(char * a_skill, bst_node *& root)
 {
     if(root)
     {
         //recursively traverse the left subtree
-        remove(a_keyword, root -> left);    
+        remove(a_skill, root -> left);    
 
         //if the current entry's keyword matches the sought after keyword
-        if(root -> entry -> retrieve(a_keyword, root -> key))
+        if(root -> entry -> retrieve(a_skill, root -> key))
         {
             //if the matching node has no children
             if(!root -> left && !root -> right)
@@ -263,7 +263,7 @@ int table::remove(char * a_keyword, bst_node *& root)
         }
       
         //recursively traverse the right subtree
-        remove(a_keyword, root -> right);
+        remove(a_skill, root -> right);
       
         return 1; 
     }
