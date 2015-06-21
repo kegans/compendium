@@ -8,7 +8,7 @@
   * kegan.sanchez@gmail.com
   * 
   * Character-Lexicon: Creates a binary search tree ADT to 
-  * manage mobile apps by implementing functions to 
+  * manage RPG Characters by implementing functions to 
   * recursively insert, retrieve, display, remove all 
   * matches by location, and remove all items.
   *
@@ -20,14 +20,16 @@
 
 #include "envoy.h"
 
+// constructor
 envoy::envoy(){}
 
+// destructor
 envoy::~envoy(){}
 
 // calls the app_entry function to create an entry with data sized just right
-int envoy::create(char * a_name, char ** a_keywords, char * a_descrip, int a_rating, int a_cat_num)
+int envoy::create(char * a_name, char ** a_skills, char * a_arcana, int a_level, int a_skill_num)
 {
-    if(!to_add.create(a_name, a_keywords, a_descrip, a_rating, a_cat_num))
+    if(!to_add.create(a_name, a_skills, a_arcana, a_level, a_skill_num))
         return 0;
     
     if(!app_list.insert(to_add))
@@ -64,16 +66,16 @@ bool again()
 
 //calls the BST wrapper function to retrieve and
 //display an entry based on keyword
-int envoy::retrieve(char * a_keyword)
+int envoy::retrieve(char * a_skill)
 {
     //returns success/failure of the BST retrieval function
-    return app_list.retrieve(a_keyword, an_entry);
+    return app_list.retrieve(a_skill, an_entry);
 }
 
 //calls the BST wrapper funcion to remove
 //an entry based on keyword
-int envoy::remove(char * a_keyword)
+int envoy::remove(char * a_skill)
 {
     //returns success/failure of the BST removal function
-    return app_list.remove(a_keyword);
+    return app_list.remove(a_skill);
 } 
