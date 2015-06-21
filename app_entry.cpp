@@ -1,5 +1,5 @@
 /**
-  * app_entry.cpp
+  * Character.cpp
   *
   * Character-Lexicon
   * 6.20.2015
@@ -8,60 +8,60 @@
   * kegan.sanchez@gmail.com
   * 
   * Character-Lexicon: Creates a binary search tree ADT to 
-  * manage mobile apps by implementing functions to 
+  * manage RPG Characters by implementing functions to 
   * recursively insert, retrieve, display, remove all 
   * matches by location, and remove all items.
   *
-  * app_entry.h module: contains #includes for the 
-  * cstring, cctype, and iostream libraries as well as
-  * the APP definition for a class for an app entry. 
-  * The app_entry class contains member function 
-  * prototypes for a constructor, destructor, creating
-  * a new entry, copying an entry, retrieving an entry 
-  * based on keyword, and displaying an entry.
+  * Character.cpp module: initializes private member
+  * variables through the constructor, deletes dynamic
+  * memory through the destructor, and implementation
+  * for member functions that create a new character, 
+  * copy a character, retrieve a character based on skill, 
+  * and display a character.
   *
   */
-#include "app_entry.h"
 
-//initializes app_entry data members
-app_entry::app_entry()
+#include "character.h"
+
+//initializes Character data members
+Character::Character()
 {
-    name = NULL; //name of app
-    keywords = NULL; //list of keywords
-    descrip = NULL; //description for each app
-    rating = 0; //rating for each app
-    categories = 0; //number of keywords
+    name = NULL; //name of a character
+    skills = NULL; //list of skills
+    arcana = NULL; //arcana a character belongs to
+    level = 0; //level for a character
+    num_skills = 0; //number of skills
 }
 
 //destroys all allocated memory
-app_entry::~app_entry()
+Character::~Character()
 {
     if(name) //delete allocated memory for name
         delete[]name;
-    if(descrip) //delete allocated memory for description
-        delete[]descrip;
+    if(arcana) //delete allocated memory for arcana
+        delete[]arcana;
     
-    if(keywords) //delete allocated memory for keywords
+    if(skills) //delete allocated memory for skills
     {
-        for(int i = 0; i < categories; ++i)
+        for(int i = 0; i < num_skills; ++i)
         {
-            delete [] keywords[i]; //delete each keyword
+            delete [] skills[i]; //delete each skill
         }
     
-        delete [] keywords; //delete the entire array of pointers
+        delete [] skills; //delete the entire array of pointers
     }
     
     //set everything to NULL to avoid segmentation faults
     name = NULL; 
-    descrip = NULL;
-    keywords = NULL;
-    rating = 0;
+    arcana = NULL;
+    skills = NULL;
+    level = 0;
 }
 
-//creates a new entry based on temp values from the client program
-int app_entry::create(char * new_name, char ** new_keywords, char * new_descrip, int new_rating, int new_cat_num)
+//creates a new character based on temp values from the client program
+int Character::create(char * new_name, char ** new_skills, char * new_arcana, int new_level, int new_skills_num)
 {
-    if(!new_name || !new_descrip || !new_rating) return 0; //if values are NULL, return failure
+    if(!new_name || !new_arcana || !new_level) return 0; //if values are NULL, return failure
 
     if(name) //if name is already pointing to something
     {
@@ -71,41 +71,41 @@ int app_entry::create(char * new_name, char ** new_keywords, char * new_descrip,
     name = new char[strlen(new_name)+1]; //create new name char
     strcpy(name, new_name); //copy information into name
 
-    /*if(keywords) // if keywords is already pointing to something
+    /*if(skills) // if skills is already pointing to something
     {
-        for(int i = 0; keywords[i] != NULL; ++i) // for each element, delete the data
+        for(int i = 0; skills[i] != NULL; ++i) // for each element, delete the data
         {
-            delete [] keywords[i];
+            delete [] skills[i];
         }
         
-        delete [] keywords; // delete the entire array of pointers
+        delete [] skills; // delete the entire array of pointers
     }*/
     
-    categories = new_cat_num; //set the member variable to the number of elements
+    num_skills = new_skills_num; //set the member variable to the number of elements
 
-    keywords = new char*[categories]; //create a new array of pointers 
-    for(int j = 0; j < categories; ++j) //for every element in the array
+    skills = new char*[num_skills]; //create a new array of pointers 
+    for(int j = 0; j < num_skills; ++j) //for every element in the array
     {
-        keywords[j] = new char[strlen(new_keywords[j])+1]; //create a new char
-        strcpy(keywords[j], new_keywords[j]); //copy the data over
+        skills[j] = new char[strlen(new_skills[j])+1]; //create a new char
+        strcpy(skills[j], new_skills[j]); //copy the data over
     }
-    if(descrip) //if descrip is already pointing to something
+    if(arcana) //if arcana is already pointing to something
     {
-        delete [] descrip; //delete descrip and set it to NULL
-        descrip = NULL;
+        delete [] arcana; //delete arcana and set it to NULL
+        arcana = NULL;
     }
-    descrip = new char[strlen(new_descrip)+1]; //create a new char
-    strcpy(descrip, new_descrip); //copy the data over
+    arcana = new char[strlen(new_arcana)+1]; //create a new char
+    strcpy(arcana, new_arcana); //copy the data over
 
-    rating = new_rating; //set the member variable to the new temp value
+    level = new_level; //set the member variable to the new temp value
 
     return 1;
 }
 //copies a data into a struct as well as temp data members for a node in a LLL of structs
-int app_entry::copy(const app_entry & new_entry, char **& temp_keywords, int &temp_categories)
+int Character::copy(const Character & new_character, char **& temp_skills, int &temp_num_skills)
 {
     //if either of the variables are NULL, return failure
-    if(!new_entry.name || !new_entry.keywords || !new_entry.descrip || !new_entry.rating) return 0;
+    if(!new_character.name || !new_character.skills || !new_character.arcana || !new_character.level) return 0;
 
     if(name) //if name is already pointing to something
     {
@@ -113,66 +113,66 @@ int app_entry::copy(const app_entry & new_entry, char **& temp_keywords, int &te
         name = NULL;
     }
 
-    /*if(keywords) //if keywords is already pointing to something
+    /*if(skills) //if skills is already pointing to something
     {
-        for(int i = 0; keywords[i] != NULL; ++i) // for every element in the array
+        for(int i = 0; skills[i] != NULL; ++i) // for every element in the array
         {
 
-            delete [] keywords[i]; // delete each item being pointed to
+            delete [] skills[i]; // delete each item being pointed to
         }
         
-        delete [] keywords; // delete the entire array
-        keywords = NULL; // set the array pointer to NULL
+        delete [] skills; // delete the entire array
+        skills = NULL; // set the array pointer to NULL
     }*/
 
-    if(descrip) //if descrip is already pointing to something
+    if(arcana) //if arcana is already pointing to something
     {
-        delete [] descrip; //delete descrip and set it to NULL
-        descrip = NULL;
+        delete [] arcana; //delete arcana and set it to NULL
+        arcana = NULL;
     }
 
-    name = new char[strlen(new_entry.name)+1]; //create a new char 
-    strcpy(name, new_entry.name); //copy the data over
+    name = new char[strlen(new_character.name)+1]; //create a new char 
+    strcpy(name, new_character.name); //copy the data over
    
-    keywords = new char*[new_entry.categories]; //create a new array of pointers
-    for(int j = 0; j < new_entry.categories; ++j) //for every element in the array
+    skills = new char*[new_character.num_skills]; //create a new array of pointers
+    for(int j = 0; j < new_character.num_skills; ++j) //for every element in the array
     {
-        keywords[j] = new char[strlen(new_entry.keywords[j])+1]; //create a new char
-        strcpy(keywords[j], new_entry.keywords[j]); //copy the data over
+        skills[j] = new char[strlen(new_character.skills[j])+1]; //create a new char
+        strcpy(skills[j], new_character.skills[j]); //copy the data over
     }
 
-    temp_keywords = new char*[new_entry.categories];
-    for(int l = 0; l < new_entry.categories; ++l)
+    temp_skills = new char*[new_character.num_skills];
+    for(int l = 0; l < new_character.num_skills; ++l)
     {
-        temp_keywords[l] = new char[strlen(keywords[l])+1];
-        strcpy(temp_keywords[l], keywords[l]);
+        temp_skills[l] = new char[strlen(skills[l])+1];
+        strcpy(temp_skills[l], skills[l]);
     }
 
-    descrip = new char[strlen(new_entry.descrip)+1]; //create a new char
-    strcpy(descrip, new_entry.descrip); //copy the data over
+    arcana = new char[strlen(new_character.arcana)+1]; //create a new char
+    strcpy(arcana, new_character.arcana); //copy the data over
 
-    rating = new_entry.rating; //set the member variable to the temp valu
-    categories = new_entry.categories;
-    temp_categories = new_entry.categories;
+    level = new_character.level; //set the member variable to the temp value
+    num_skills = new_character.num_skills;
+    temp_num_skills = new_character.num_skills;
     return 1;   
 }
 
-//return whether the current entry's keyword is alphabetically less
-//than or greater than a new keyword
-int app_entry::compare(const char * keyword, char * key)
+//return whether the current character's skill is alphabetically less
+//than or greater than a new skill
+int Character::compare(const char * skill, char * key)
 {
     //compares each element sequentially
-    return strcmp(keyword, key);
+    return strcmp(skill, key);
 }
 
-//returns whether a matching app has been found
-int app_entry::retrieve(char * keyword_to_find, char * key)
+//returns whether a matching character has been found
+int Character::retrieve(char * skill_to_find, char * key)
 {
-    if(!keyword_to_find || !key) //returns failure if chars are NULL
+    if(!skill_to_find || !key) //returns failure if chars are NULL
         return 0;
 
     //returns success if a match occurs and failure otherwise    
-    if(strcmp(key, keyword_to_find) == 0)
+    if(strcmp(key, skill_to_find) == 0)
     {
         return 1;
     }
@@ -180,24 +180,26 @@ int app_entry::retrieve(char * keyword_to_find, char * key)
         return 0;
 }
 
-//display a single app in the list
-int app_entry::display(void)const
+//display a single character in the list
+int Character::display(void)const
 {
     //if any of the data members are NULL, return failure
-    if(!name || !descrip || !rating)
+    if(!name || !arcana || !level)
         return 0;
 
     cout << "******************************************" << endl;
-    cout << "APP name:\t" << name << '\n'; //output the name variable
+    cout << "Character name:\t" << name << '\n'; //output the name variable
     
-    cout << "Categories:\t";
-    for(int i = 0; i < categories; ++i) //for every element in keywords list
+    cout << "Skills:\t";
+    for(int i = 0; i < num_skills; ++i) //for every element in skills list
     {
-        cout << keywords[i] << " "; //output each keyword being pointed to
+        cout << skills[i] << " "; //output each skill being pointed to
     }
 
-    cout << '\n' << "Description:\t" << descrip << '\n' //output the description
-         << "Rating:\t\t" << rating << '\n' << '\n'; //output the rating
+    cout << '\n' << "Arcana:\t" << arcana << '\n' //output the arcana
+         << "Level:\t\t" << level << '\n' << '\n'; //output the level
     
     return 1;
 }
+
+
